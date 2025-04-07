@@ -1,0 +1,60 @@
+<div class="container min-h-screen bg-gray-100">
+    <h1 class="text-3xl font-bold text-gray-700 mb-4">Authors</h1>
+    <hr />
+    <div class="h-12 mt-8 bg-[#8f6afb] w-full rounded-t-lg text-white font-semibold text-xl flex items-center pl-6">Add Book</div>
+    <form (ngSubmit)="submitForm()" class="bg-white p-6 rounded-b-lg shadow-lg">
+      <!-- Book Title -->
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium">Add Author:</label>
+        <input
+          type="text"
+          [(ngModel)]="author.bookWriter"
+          name="bookWriter"
+          required
+          class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+        />
+      </div>
+  
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="w-full bg-[#8f6afb] text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition"
+      >
+        {{ editIndex !== null ? "Update" : "Submit" }}
+      </button>
+    </form>
+    <div class="overflow-x-auto">
+      <table class="w-full ">
+        <thead class=" bg-[#8f6afb] text-white text-left ">
+          <tr >
+            <th class="px-6 py-3 ">S #</th>
+            <th class="px-6 py-3">Author</th>
+            <th class="px-6 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody >
+          <tr *ngFor="let author of authors; let i = index" class=" hover:bg-gray-50">
+            <td>{{i+1}}</td>
+            <td class="px-6 py-4 text-gray-800 font-medium max-w-36">
+              {{ author.bookWriter }}
+            </td>
+            <td class=" px-6 py-4 text-gray-700 w-24 ">
+              <a
+                (click)="editAuthor(i)"
+                class=" px-2 py-1 "
+              >
+              ✎
+              </a>
+              <a
+                (click)="deleteAuthor(i)"
+                class="  px-2 py-1 "
+              >
+              🗑
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

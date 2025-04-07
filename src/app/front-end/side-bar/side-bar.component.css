@@ -1,0 +1,48 @@
+/* nav{
+background-color: #8f6afb;
+height: 100%;
+padding: 20px;
+display: flex;
+flex-direction: column;
+} */
+
+.nav-item.selected {
+  background-color: #f2f2f2; /* Selected button color */
+  color: #424242; /* Text color */
+  position: relative;
+  /* border-top-right-radius: -20px; */
+}
+
+nav {
+border-top: 0.25px solid #A688FC;
+}
+.square-indicator {
+    position: absolute;
+    left: 100%; /* Places the square exactly to the right */
+    top: -50%; /* Moves it up by half of its height */
+    height: 200%; /* Makes it double the button height */
+    width: 32px; /* Customize width as needed */
+    background-color: #f2f2f2; /* Adjust color */
+  }
+
+  .circle-indicator-top {
+    position: absolute;
+    left: -98.5%; /* Places the square exactly to the right */
+    top: -42%; /* Moves it up by half of its height */
+    height: 64px; /* Makes it double the button height */
+    width: 64px; /* Customize width as needed */
+    background-color: #8f6afb; /* Adjust color */
+    border-radius: 32px; /* Optional: smooth edges */
+  }
+
+  .circle-indicator-bottom {
+    position: absolute;
+    left: -98.5%; /* Places the square exactly to the right */
+    bottom: -42%; /* Moves it up by half of its height */
+    height: 64px; /* Makes it double the button height */
+    width: 64px; /* Customize width as needed */
+    background-color: #8f6afb; /* Adjust color */
+    border-radius: 32px; /* Optional: smooth edges */
+  }
+  
+  

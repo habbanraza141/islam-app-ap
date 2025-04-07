@@ -1,0 +1,38 @@
+<div class="min-h-full w-[230px] bg-[#8f6afb] text-white flex flex-col py-12 pl-8">
+  <div class="flex  text-xl font-bold ">Admin Panel</div>
+  <nav class="flex-1  my-8 py-4 space-y-2 borderTop">
+
+      <a  (click)="navigateTo('books')" [class.selected]="activeRoute === 'books'" class="nav-item block px-6 py-3 rounded-l-2xl cursor-pointer">
+        📚  Books
+        <div *ngIf="activeRoute === 'books'" class="square-indicator">
+          <div class="circle-indicator-top"></div>
+          <div class="circle-indicator-bottom"></div>
+        </div>
+
+      </a>
+      <a (click)="navigateTo('categories')" [class.selected]="activeRoute === 'categories'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
+        🗂️ Categories
+        <div *ngIf="activeRoute === 'categories'" class="square-indicator">
+          <div class="circle-indicator-top"></div>
+          <div class="circle-indicator-bottom"></div>
+        </div>
+
+      </a>
+      <!-- <a (click)="navigateTo('languages')" [class.selected]="activeRoute === 'languages'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
+        🔡 Languages
+        <div *ngIf="activeRoute === 'languages'" class="square-indicator">
+          <div class="circle-indicator-top"></div>
+          <div class="circle-indicator-bottom"></div>
+        </div>
+
+      </a> -->
+      <a (click)="navigateTo('authors')" [class.selected]="activeRoute === 'authors'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
+        👥 Authors
+        <div *ngIf="activeRoute === 'authors'" class="square-indicator">
+          <div class="circle-indicator-top"></div>
+          <div class="circle-indicator-bottom"></div>
+        </div>
+
+      </a>
+  </nav>
+</div>

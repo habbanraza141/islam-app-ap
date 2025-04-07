@@ -1,0 +1,9 @@
+<div class="flex">
+  <app-side-bar *ngIf="isSidebarVisible" [isVisible]="isSidebarVisible"></app-side-bar>
+  <div class="flex-1 p-8 min-h-screen bg-[#8f6afb]">
+    <app-navbar (toggle)="toggleSidebar()"></app-navbar>
+    <div class="p-4 bg-gray-100 rounded-b-3xl">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

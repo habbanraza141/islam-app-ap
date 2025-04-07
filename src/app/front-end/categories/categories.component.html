@@ -1,0 +1,105 @@
+<div class="container min-h-screen bg-gray-100">
+  <h1 class="text-3xl font-bold text-gray-700 mb-4">Add and View Categories</h1>
+  <hr />
+<div
+    class="h-12 mt-8 bg-[#8f6afb] w-full rounded-t-lg text-white font-semibold text-xl flex items-center pl-6"
+  >
+    Add category
+  </div>
+  <form (ngSubmit)="submitForm()" class="bg-white p-6 rounded-b-lg shadow-lg">
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Main Category:</label>
+      <input
+        type="text"
+        [(ngModel)]="newCategory.category"
+
+        name="categories"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      />
+    </div>
+
+    <!-- <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Sub Categories:</label>
+      <input
+        type="text"
+
+        name="categories"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      />
+    </div> -->
+
+    <div class="mb-4">
+        <label class="block text-gray-700 font-medium">Sub Categories:</label>
+        <div *ngFor="let subCategory of newCategory.subCategories; let i = index" class="mb-2">
+          <div class="flex items-center space-x-2">
+            <input
+              type="text"
+              [(ngModel)]="subCategory.key"
+              (ngModelChange)="updateTitle(i)"
+              name="subCategoryTitle{{ i }}"
+              placeholder="Subcategory Title"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            />
+            <button
+              type="button"
+              (click)="removeSubCategory(i)"
+              class="bg-red-500 text-white px-4 py-2 rounded-lg"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="addSubCategory()"
+          class="bg-green-500 text-white py-2 px-4 rounded-lg"
+        >
+          Add Subcategory
+        </button>
+      </div>
+  
+
+    <button
+      type="submit"
+      class="w-full bg-[#8f6afb] text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition"
+    >
+      {{ editIndex !== null ? "Update" : "Submit" }}
+    </button>
+  </form> 
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-[#8f6afb] text-white text-left">
+        <tr>
+          <th class="px-6 py-3">S #</th>
+          <th class="px-6 py-3">Category</th>
+          <th class="px-6 py-3">Sub category</th>
+          <th class="px-6 py-3 text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let category of categoryList; let i = index"
+          class="hover:bg-gray-50"
+        >
+          <td class="max-w-24 text-center">{{ i + 1 }}</td>
+          <td class="px-6 py-4 text-gray-700 ">
+            {{ category.category }}
+          </td>
+          <td class="px-6 py-4 text-gray-700 capitalize ">
+            <!-- <div *ngFor="let subcategory of category.subCategories.slice(0, -1)" class=" last:border-none">
+              {{ subcategory.title }}
+            </div> -->
+            <div>{{ getSubCategoryTitles(category.subCategories) }}</div>
+
+          </td>
+          <td class="px-6 py-4 text-gray-700 text-center">
+            <a  class="px-2 py-1"> ✎ </a>
+            <a (click)="deleteCategory(i)" class="px-2 py-1"> 🗑 </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
