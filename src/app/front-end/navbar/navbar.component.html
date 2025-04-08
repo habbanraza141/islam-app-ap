@@ -1,13 +1,29 @@
-<div class="py-2 bg-white  rounded-t-3xl text-white flex items-center justify-between px-6 shadow-md">
-    <div class="">
-      <a (click)="toggleSidebar()">
-
-        <img src="../../../assets/images/menu.png" class="h-8 w-8">
-      </a>
-    </div>
-    <div class="flex items-center space-x-4">
-      <button class="p-2  hover:bg-pink-500">🔔</button>
-      <div class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full hover:bg-pink-500 cursor-pointer">Admin</div>
+<div
+  class="py-2 bg-white rounded-t-3xl text-white flex items-center justify-between px-6 shadow-md"
+>
+  <div class="">
+    <a (click)="toggleSidebar()">
+      <img src="../../../assets/images/menu.png" class="h-8 w-8" />
+    </a>
+  </div>
+  <div class="flex items-center space-x-4">
+    <button class="p-2 hover:bg-pink-500">🔔</button>
+    <div
+      (click)="toggleLogoutMenu()"
+      class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full hover:bg-pink-500 cursor-pointer"
+    >
+      Admin
     </div>
   </div>
-  
+  <div
+    *ngIf="showLogoutMenu"
+    class="absolute right-12 mt-14 w-22 bg-white rounded shadow-md border z-50"
+  >
+    <button
+      (click)="logout()"
+      class="block w-full text-left px-4 py-2 hover:bg-red-100 text-red-600"
+    >
+      Logout
+    </button>
+  </div>
+</div>
