@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BookService } from '../../shared/services/book.service';
 import { CategoryService } from '../../shared/services/category.service';
+import { AuthorService } from '../../shared/services/author.service';
 
 interface Book {
   id: number;
@@ -28,11 +29,14 @@ export class BookAdminComponent implements OnInit {
   categories: any[] = [];
   subCategories: any[] = [];
   selectedCategoryId: number | null = null;
+  selectedAuthorId: number | null = null;
   selectedSubCategory: string | null = null;
   bookList: any[] = [];
+  authors: any[] = [];
   constructor(
     private bookService: BookService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private authorService: AuthorService
   ) {}
   editIndex: number | null = null;
 
@@ -50,6 +54,13 @@ export class BookAdminComponent implements OnInit {
   };
 
   ngOnInit() {
+    this.authorService.getAuthors().subscribe({
+      next: (data) => {
+        this.authors = data;
+        console.log('Authors fetched:', this.authors);
+      },
+      error: (err) => console.error('Error fetching Authors:', err),
+    });
     this.categoryService.getCategories().subscribe((categories) => {
       this.categories = categories;
     });
@@ -71,6 +82,13 @@ export class BookAdminComponent implements OnInit {
     this.book.mainCategory = selectedCategory ? selectedCategory.category : '';
   }
 
+  onAuthorChange() {
+    const selectedAuthor = this.authors.find(
+      (auth) => auth.id == this.selectedAuthorId
+    );
+    this.book.bookWriter = selectedAuthor ? selectedAuthor.bookWriter : '';
+  }
+
   toggleSubcategory(subKey: any) {
     if (this.book.categories.includes(subKey)) {
       this.book.categories = this.book.categories.filter((s) => s !== subKey);
@@ -82,6 +100,23 @@ export class BookAdminComponent implements OnInit {
   submitForm() {
     const bookData = { ...this.book };
     console.log(bookData);
+    if (this.editIndex !== null) {
+      // 🔁 EDIT MODE
+      const docId = this.bookList[this.editIndex].docId;
+      if (!docId) {
+        console.error('Missing docId for update');
+        return;
+      }
+  
+      this.bookService.updateBook(docId, bookData).subscribe({
+        next: () => {
+          this.bookList[this.editIndex!] = { ...bookData, docId };
+          this.resetForm();
+          this.editIndex = null;
+        },
+        error: (err) => console.error('Error updating book:', err),
+      });
+    } else {
     this.bookService.addBook(bookData).subscribe({
       next: () => {
         this.bookList.push(bookData); // Optionally update the UI after successful submission
@@ -90,9 +125,26 @@ export class BookAdminComponent implements OnInit {
       error: (err) => console.error('Error submitting category:', err),
     });
   }
+  }
 
-  editBook(index: number) {}
-
+  editBook(index: number) {
+    this.editIndex = index;
+    const bookToEdit = this.bookList[index];
+    this.book = { ...bookToEdit };
+  
+    // Populate selectedCategoryId and selectedAuthorId if needed
+    const category = this.categories.find(cat => cat.category === bookToEdit.mainCategory);
+    if (category) {
+      this.selectedCategoryId = category.id;
+      this.subCategories = category.subCategories;
+    }
+  
+    const author = this.authors.find(auth => auth.bookWriter === bookToEdit.bookWriter);
+    if (author) {
+      this.selectedAuthorId = author.id;
+    }
+  }
+  
   deleteBook(index: number) {
     const bookToDelete = this.bookList[index];
   
