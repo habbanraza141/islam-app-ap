@@ -30,9 +30,9 @@ export class AuthorsComponent implements OnInit {
     this.authorService.getAuthors().subscribe({
       next: (data) => {
         this.authors = data;
-        console.log('Books fetched:', this.authors);
+        console.log('Authors fetched:', this.authors);
       },
-      error: (err) => console.error('Error fetching books:', err),
+      error: (err) => console.error('Error fetching Authors:', err),
     });
   }
 
