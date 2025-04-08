@@ -5,11 +5,13 @@ import { DashboardComponent } from './front-end/dashboard/dashboard.component';
 import { CategoriesComponent } from './front-end/categories/categories.component';
 import { LanguagesComponent } from './front-end/languages/languages.component';
 import { AuthorsComponent } from './front-end/authors/authors.component';
+import { authGuard } from './shared/guard/auth.guard';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
 
     { path: '', component: DashboardComponent,
+        canActivate: [authGuard],
         children: [
             { path: '', redirectTo: 'books', pathMatch: 'full' }, // Redirect to books by default
             { path: 'books', component: BookAdminComponent },
