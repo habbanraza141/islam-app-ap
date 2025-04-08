@@ -1,8 +1,8 @@
 <div class="flex justify-center items-center h-screen">
     <form class="bg-white shadow-md rounded p-8 w-96" (submit)="login(); $event.preventDefault()">
       <h2 class="text-xl font-bold mb-4">Admin Login</h2>
-      <input type="email" [(ngModel)]="email" class="w-full p-2 border mb-2" placeholder="Email" required />
-      <input type="password" [(ngModel)]="password" class="w-full p-2 border mb-4" placeholder="Password" required />
+      <input type="email" name="email" [(ngModel)]="email" class="w-full p-2 border mb-2" placeholder="Email" required />
+      <input type="password" name="password" [(ngModel)]="password" class="w-full p-2 border mb-4" placeholder="Password" required />
       <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Login</button>
       <!-- <p *ngIf="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p> -->
     </form>
