@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BookService } from '../../shared/services/book.service';
 import { CategoryService } from '../../shared/services/category.service';
 import { AuthorService } from '../../shared/services/author.service';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 interface Book {
   id: number;
@@ -108,23 +109,72 @@ export class BookAdminComponent implements OnInit {
         return;
       }
   
-      this.bookService.updateBook(docId, bookData).subscribe({
-        next: () => {
-          this.bookList[this.editIndex!] = { ...bookData, docId };
-          this.resetForm();
-          this.editIndex = null;
-        },
-        error: (err) => console.error('Error updating book:', err),
+      // this.bookService.updateBook(docId, bookData).subscribe({
+      //   next: () => {
+      //     this.bookList[this.editIndex!] = { ...bookData, docId };
+      //     this.resetForm();
+      //     this.editIndex = null;
+      //   },
+      //   error: (err) => console.error('Error updating book:', err),
+      // });
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Do you want to update "${bookData.bookTitle}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, update it!',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.bookService.updateBook(docId, bookData).subscribe({
+            next: () => {
+              this.bookList[this.editIndex!] = { ...bookData, docId };
+              Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: `"${bookData.bookTitle}" was updated successfully.`,
+                confirmButtonText: 'OK',
+              });
+              this.resetForm();
+              this.editIndex = null;
+            },
+            error: (err) => console.error('Error updating book:', err),
+          });
+        }
       });
     } else {
-    this.bookService.addBook(bookData).subscribe({
-      next: () => {
-        this.bookList.push(bookData); // Optionally update the UI after successful submission
-        this.resetForm();
-      },
-      error: (err) => console.error('Error submitting category:', err),
-    });
-  }
+
+       const maxId = this.bookList.length
+       ? Math.max(...this.bookList.map((b) => b.id || 0))
+       : 0;
+     bookData.id = maxId + 1;
+ 
+     this.bookService.addBook(bookData).subscribe({
+       next: () => {
+         // Fetch books again OR simulate it manually with push + docId
+         this.bookService.getBooks().subscribe((books) => {
+           this.bookList = books;
+           Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'The book was added successfully.',
+            confirmButtonText: 'OK',
+          });
+           this.resetForm();
+         });
+       },
+       error: (err) => console.error('Error submitting book:', err),
+     });
+   }
+  //   this.bookService.addBook(bookData).subscribe({
+  //     next: () => {
+  //       this.bookList.push(bookData); // Optionally update the UI after successful submission
+  //       this.resetForm();
+  //     },
+  //     error: (err) => console.error('Error submitting category:', err),
+  //   });
+  // }
   }
 
   editBook(index: number) {
@@ -145,30 +195,75 @@ export class BookAdminComponent implements OnInit {
     }
   }
   
-  deleteBook(index: number) {
-    const bookToDelete = this.bookList[index];
+  // deleteBook(index: number) {
+  //   const bookToDelete = this.bookList[index];
   
-    if (!bookToDelete.docId) {
-      console.error('No Firestore document ID found for this book.');
-      return;
-    }
+  //   if (!bookToDelete.docId) {
+  //     console.error('No Firestore document ID found for this book.');
+  //     return;
+  //   }
   
-    if (
-      !confirm(`Are you sure you want to delete "${bookToDelete.book}"?`)
-    ) {
-      return;
-    }
+  //   if (
+  //     !confirm(`Are you sure you want to delete "${bookToDelete.book}"?`)
+  //   ) {
+  //     return;
+  //   }
   
-    this.bookService.deleteBook(bookToDelete.docId).subscribe({
-      next: () => {
-        this.bookList.splice(index, 1);
-        console.log(
-          `Book "${bookToDelete.book}" deleted successfully.`
-        );
-      },
-      error: (err) => console.error('Error deleting Book:', err),
-    });
+  //   this.bookService.deleteBook(bookToDelete.docId).subscribe({
+  //     next: () => {
+  //       this.bookList.splice(index, 1);
+  //       console.log(
+  //         `Book "${bookToDelete.book}" deleted successfully.`
+  //       );
+  //     },
+  //     error: (err) => console.error('Error deleting Book:', err),
+  //   });
+  // }
+
+
+deleteBook(index: number) {
+  const bookToDelete = this.bookList[index];
+
+  if (!bookToDelete.docId) {
+    console.error('No Firestore document ID found for this book.');
+    return;
   }
+
+  Swal.fire({
+    title: `Are you sure you want to delete "${bookToDelete.bookTitle}"?`,
+    // text: 'This action cannot be undone!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.bookService.deleteBook(bookToDelete.docId).subscribe({
+        next: () => {
+          this.bookList.splice(index, 1);
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: `Book "${bookToDelete.bookTitle}" was deleted successfully.`,
+            timer: 1000,
+            showConfirmButton: false
+          });
+        },
+        error: (err) => {
+          console.error('Error deleting Book:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'There was a problem deleting the book. Please try again later.',
+          });
+        },
+      });
+    }
+  });
+}
+
   resetForm() {
     this.book = {
       id: 0,

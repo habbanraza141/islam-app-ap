@@ -6,6 +6,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { map, Observable, from } from 'rxjs';
 
@@ -34,6 +35,11 @@ export class CategoryService {
     return from(addDoc(categoriesRef, category)).pipe(map(() => {})); // Return void
   }
 
+  updateCategory(docId: string, updatedCategory: any): Observable<void> {
+    const categoriesRef = doc(this.firestore ,this.collectionPath, docId);
+    return from(updateDoc(categoriesRef, updatedCategory)).pipe(map(() => {})); 
+  }
+  
   getCategories(): Observable<Category[]> {
     const categoriesRef = collection(this.firestore, this.collectionPath);
 

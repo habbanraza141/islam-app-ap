@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, updateDoc, deleteDoc, doc, getDocs, query } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, updateDoc, deleteDoc, doc, getDocs, query, setDoc } from '@angular/fire/firestore';
 import { map, Observable, from } from 'rxjs';
 
 interface Book {
@@ -24,10 +24,19 @@ export class BookService {
   constructor(private firestore: Firestore) {}
 
   
-  addBook(book: Book): Observable<void> {
+  // addBook(book: Book): Observable<void> {
+  //   const booksRef = collection(this.firestore, this.collectionPath);
+  //   return from(addDoc(booksRef, book)).pipe(map(() => {})); 
+  // }
+
+  addBook(book: Book): Observable<Book> {
     const booksRef = collection(this.firestore, this.collectionPath);
-    return from(addDoc(booksRef, book)).pipe(map(() => {})); 
+    const docRef = doc(booksRef); // precreate docRef to get ID
+    return from(setDoc(docRef, book)).pipe(
+      map(() => ({ ...book, docId: docRef.id })) // return book with docId
+    );
   }
+  
   
   updateBook(docId: string, updatedBook: any): Observable<void> {
     const booksRef = doc(this.firestore ,this.collectionPath, docId);
