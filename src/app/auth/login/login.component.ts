@@ -14,6 +14,7 @@ import { CookieService } from '../../shared/services/cookie.service';
 export class LoginComponent {
   email = '';
   password = '';
+  username = '';
 
   constructor(
     private authService: AuthService,
@@ -21,23 +22,41 @@ export class LoginComponent {
     private cookiesService: CookieService
   ) {}
 
+  // login() {
+  //   this.authService.login(this.email, this.password).subscribe({
+  //     next: (userCredential) => {
+  //       console.log('User logged in:', userCredential);
+  //       userCredential.user.getIdToken().then((token: any) => {
+  //         this.cookiesService.setCookie('authToken', token, 7); // Set token in cookie for 7 days
+  //       });
+  //       this.router.navigate(['/']);
+  //     },
+  //     error: (err) => console.error('Login error:', err),
+  //   });
+  // }
+
   login() {
-    this.authService.login(this.email, this.password).subscribe({
-      next: (userCredential) => {
-        console.log('User logged in:', userCredential);
-        userCredential.user.getIdToken().then((token: any) => {
-          this.cookiesService.setCookie('authToken', token, 7); // Set token in cookie for 7 days
-        });
+    this.authService.login(this.username, this.password).subscribe({
+      next: (user) => {
+        const token = this.generateFakeToken(); 
+        this.cookiesService.setCookie('authToken', token, 7);
+        this.cookiesService.setCookie('authUser', JSON.stringify(user), 7);
         this.router.navigate(['/']);
       },
-      error: (err) => console.error('Login error:', err),
+      error: (err) => console.error('Login error:', err.message),
     });
   }
 
   logout() {
+    this.cookiesService.deleteCookie('authToken');
+    this.cookiesService.deleteCookie('authUser');
     this.authService.logout().subscribe({
       next: () => console.log('User logged out'),
       error: (err) => console.error('Logout error:', err),
     });
+  }
+
+  generateFakeToken(): string {
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
   }
 }
