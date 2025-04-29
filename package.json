@@ -24,6 +24,7 @@
     "feather-icons": "^4.29.2",
     "firebase": "^11.4.0",
     "font-awesome": "^4.7.0",
+    "mammoth": "^1.9.0",
     "ngx-toastr": "^17.0.2",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.17.2",
