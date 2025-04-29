@@ -1,0 +1,31 @@
+.width {
+    display: inline-block;
+    width: 150px;
+    margin-right: 10px;
+  }
+  
+  table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 50%;
+  }
+  
+  th, td {
+    /* border: 1px solid black; */
+    padding: 8px;
+    text-align: left;
+  }
+  
+  button {
+    margin-right: 5px;
+  }
+
+  .container{
+    padding: 20px;
+  }
+
+  a {
+    cursor: pointer;
+  }
+  
+  
