@@ -5,6 +5,7 @@ import { BookService } from '../../shared/services/book.service';
 import { CategoryService } from '../../shared/services/category.service';
 import { AuthorService } from '../../shared/services/author.service';
 import Swal from 'sweetalert2'; // Import SweetAlert2
+import * as mammoth from 'mammoth';
 
 interface Book {
   id: number;
@@ -34,6 +35,8 @@ export class BookAdminComponent implements OnInit {
   selectedSubCategory: string | null = null;
   bookList: any[] = [];
   authors: any[] = [];
+  docContent: string = '';
+
   constructor(
     private bookService: BookService,
     private categoryService: CategoryService,
@@ -53,6 +56,28 @@ export class BookAdminComponent implements OnInit {
     mainCategory: '',
     categories: [] as string[],
   };
+
+  handleFileUpload(event: any) {
+    const file = event.target.files[0];
+
+    if (file && file.name.endsWith('.docx')) {
+      const reader = new FileReader();
+      reader.onload = async (e: any) => {
+        const arrayBuffer = e.target.result;
+
+        try {
+          const result = await mammoth.convertToHtml({ arrayBuffer });
+          this.book.bookContent = result.value; // HTML content
+          console.log("Converted HTML:", result.value);
+        } catch (error) {
+          console.error("Error converting docx:", error);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      alert("Only .docx files are supported.");
+    }
+  }
 
   ngOnInit() {
     this.authorService.getAuthors().subscribe({

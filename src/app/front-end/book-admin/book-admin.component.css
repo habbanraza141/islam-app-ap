@@ -8,12 +8,18 @@
     margin-top: 20px;
     border-collapse: collapse;
     width: 100%;
+    font-size: 14px
   }
   
   th, td {
     /* border: 1px solid black; */
     padding: 8px;
     text-align: left;
+    
+  }
+
+  th{
+    white-space: nowrap;      /* keeps the content in one line */
   }
   
   button {

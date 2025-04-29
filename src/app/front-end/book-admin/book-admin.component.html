@@ -115,13 +115,14 @@
     <!--Book Content-->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium">Book Content:</label>
-      <textarea
+      <input
         [(ngModel)]="book.bookContent"
+        (change)="handleFileUpload($event)"
         name="bookContent"
-        rows="4"
-        required
+        type="file" 
+                required
         class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-      ></textarea>
+      />
     </div>
 
     <!-- Submit Button -->
@@ -132,48 +133,56 @@
       {{ editIndex !== null ? "Update" : "Submit" }}
     </button>
   </form>
-  <div class="overflow-x-auto">
-    <table class="w-full">
-      <thead class="bg-[#8f6afb] text-white text-left">
-        <tr>
-          <th class="px-6 py-3">S #</th>
-          <th class="px-6 py-3">Title</th>
-          <th class="px-6 py-3">Author</th>
-          <th class="px-6 py-3">Language</th>
-          <th class="px-6 py-3">Category</th>
-          <th class="px-6 py-3">Sub category</th>
-          <th class="px-6 py-3">About Book</th>
-          <th class="px-6 py-3 text-center">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          *ngFor="let book of bookList; let i = index"
-          class="hover:bg-gray-50"
-        >
-          <td>{{ i + 1 }}</td>
-          <td class="px-6 py-4 text-gray-800 font-medium max-w-36">
-            {{ book.bookTitle }}
-          </td>
-          <td class="px-6 py-4 text-gray-800 font-medium max-w-36">
-            {{ book.bookWriter }}
-          </td>
-          <td class="px-6 py-4 text-gray-700 capitalize w-14">
-            {{ book.language }}
-          </td>
-          <td class="px-6 py-4 text-gray-700 w-14">{{ book.mainCategory }}</td>
-          <td class="px-6 py-4 text-gray-700 capitalize max-w-24">
-            {{ book.categories.slice(0, -1).join(", ") }}
-          </td>
-          <td class="px-6 py-4 text-gray-700 truncate max-w-36">
-            {{ book.aboutBook }}
-          </td>
-          <td class="px-6 py-4 text-gray-700 w-24">
-            <a (click)="editBook(i)" class="px-2 py-1"> ✎ </a>
-            <a (click)="deleteBook(i)" class="px-2 py-1"> 🗑 </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="w-full overflow-x-auto">
+    <div class="inline-block min-w-full align-middle">
+      <table class="table-auto border-collapse">
+        <thead class="bg-[#8f6afb] text-white text-left">
+          <tr>
+            <th class="px-6 py-3">S #</th>
+            <th class="px-6 py-3">Title</th>
+            <th class="px-6 py-3">Author</th>
+            <th class="px-6 py-3">Language</th>
+            <th class="px-6 py-3">Category</th>
+            <th class="px-6 py-3">Sub category</th>
+            <th class="px-6 py-3">About Book</th>
+            <th class="px-6 py-3">Other Info</th>
+            <th class="px-6 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let book of bookList; let i = index"
+            class="hover:bg-gray-50"
+          >
+            <td>{{ i + 1 }}</td>
+            <td class="px-6 py-4 text-gray-800  max-w-36">
+              {{ book.bookTitle }}
+            </td>
+            <td class="px-6 py-4 text-gray-800  max-w-36">
+              {{ book.bookWriter }}
+            </td>
+            <td class="px-6 py-4 text-gray-700 capitalize w-14">
+              {{ book.language }}
+            </td>
+            <td class="px-6 py-4 text-gray-700 w-14">{{ book.mainCategory }}</td>
+            <td class="px-6 py-4 text-gray-700 capitalize max-w-24">
+              {{ book.categories.slice(0, -1).join(", ") }}
+            </td>
+            <td class="px-6 py-4 text-gray-700 truncate max-w-36">
+              {{ book.aboutBook }}
+            </td>
+            <td class="px-6 py-4 text-gray-700 truncate ">
+              {{ book.isPopular }}
+            </td>
+            <td class="px-6 py-4 text-gray-700 w-24">
+              <a (click)="editBook(i)" class="px-2 py-1"> ✎ </a>
+              <a (click)="deleteBook(i)" class="px-2 py-1"> 🗑 </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
+
+
