@@ -2,7 +2,7 @@
   <div class="flex  text-xl font-bold ">Admin Panel</div>
   <nav class="flex-1  my-8 py-4 space-y-2 borderTop">
 
-      <a  (click)="navigateTo('books')" [class.selected]="activeRoute === 'books'" class="nav-item block px-6 py-3 rounded-l-2xl cursor-pointer">
+      <a (click)="navigateTo('books')" [routerLink]="['books']" routerLinkActive="selected" [class.selected]="activeRoute === 'books'" class="nav-item block px-6 py-3 rounded-l-2xl cursor-pointer">
         📚  Books
         <div *ngIf="activeRoute === 'books'" class="square-indicator">
           <div class="circle-indicator-top"></div>
@@ -10,7 +10,7 @@
         </div>
 
       </a>
-      <a (click)="navigateTo('categories')" [class.selected]="activeRoute === 'categories'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
+      <a (click)="navigateTo('categories')"[routerLink]="['categories']" routerLinkActive="selected" [class.selected]="activeRoute === 'categories'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
         🗂️ Categories
         <div *ngIf="activeRoute === 'categories'" class="square-indicator">
           <div class="circle-indicator-top"></div>
@@ -26,9 +26,25 @@
         </div>
 
       </a> -->
-      <a (click)="navigateTo('authors')" [class.selected]="activeRoute === 'authors'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
+      <a (click)="navigateTo('authors')"[routerLink]="['authors']" routerLinkActive="selected" [class.selected]="activeRoute === 'authors'"  class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
         👥 Authors
         <div *ngIf="activeRoute === 'authors'" class="square-indicator">
+          <div class="circle-indicator-top"></div>
+          <div class="circle-indicator-bottom"></div>
+        </div>
+
+      </a>
+      <a (click)="navigateTo('carousel')"[routerLink]="['carousel']" routerLinkActive="selected" [class.selected]="activeRoute === 'carousel'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
+        🖼️ Carousel Images
+        <div *ngIf="activeRoute === 'carousel'" class="square-indicator">
+          <div class="circle-indicator-top"></div>
+          <div class="circle-indicator-bottom"></div>
+        </div>
+
+      </a>
+      <a (click)="navigateTo('ad')"[routerLink]="['ad']" routerLinkActive="selected" [class.selected]="activeRoute === 'ad'" class="nav-item block  px-6 py-3 rounded-l-2xl cursor-pointer">
+        🎥 Advertisement
+        <div *ngIf="activeRoute === 'ad'" class="square-indicator">
           <div class="circle-indicator-top"></div>
           <div class="circle-indicator-bottom"></div>
         </div>
