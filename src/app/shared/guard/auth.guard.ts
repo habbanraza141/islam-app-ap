@@ -21,14 +21,22 @@ export const authGuard: CanActivateFn = () => {
   //   })
   // );
 
+
+  
   const authToken = cookieService.getCookie('authToken');
   console.log(authToken);
-
-   if (!authToken) {
+  
+  if (!authToken) {
     router.navigate(['/login']);  
     return false;
   }
-
+  
+  // if (auth.isLoggedIn()) {
+  //   return true;
+  // } else {
+  //   router.navigate(['/login']);
+  //   return false;
+  // }
   
   return true;
 };
