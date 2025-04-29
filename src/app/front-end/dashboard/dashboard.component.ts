@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { SideBarComponent } from '../side-bar/side-bar.component';
 import { BookAdminComponent } from '../book-admin/book-admin.component';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { CategoriesComponent } from '../categories/categories.component';
+import { AuthorsComponent } from '../authors/authors.component';
 
 @Component({
   selector: 'app-dashboard',
