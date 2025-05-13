@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, getDocs, query } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, getDocs, query, updateDoc } from '@angular/fire/firestore';
 import { map, Observable, from } from 'rxjs';
 
 
@@ -32,5 +32,15 @@ export class AuthorService {
         })) as unknown as Author[]
       )
     );
+  }
+
+  deleteAuthor(id: string): Observable<void> {
+    const authorDocRef = doc(this.firestore, `${this.collectionPath}/${id}`);
+    return from(deleteDoc(authorDocRef)).pipe(map(() => {}));
+  }
+
+  updateAuthor(docId: string, updatedAuthor: any): Observable<void> {
+    const authorDocRef = doc(this.firestore, this.collectionPath, docId);
+    return from(updateDoc(authorDocRef, updatedAuthor)).pipe(map(() => {}));
   }
 }
