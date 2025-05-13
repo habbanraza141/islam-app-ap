@@ -19,64 +19,6 @@
       />
     </div>
 
-    <!-- Author Name -->
-    <div class="mb-4">
-      <label class="block text-gray-700 font-medium">Author Name:</label>
-      <!-- <input
-        type="text"
-        [(ngModel)]="book.bookWriter"
-        name="bookWriter"
-        required
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-      /> -->
-      <select
-      [(ngModel)]="book.bookWriter"
-      name="bookWriter"
-        required
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-      >
-        <option value="">Select Author</option>
-        <option *ngFor="let auth of authors" [value]="auth.bookWriter">
-          {{ auth.bookWriter }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Book Language -->
-    <div class="mb-4">
-      <label class="block text-gray-700 font-medium">Book Language:</label>
-      <input
-        type="text"
-        [(ngModel)]="book.language"
-        name="language"
-        required
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-      />
-    </div>
-
-    <!-- About Book -->
-    <div class="mb-4">
-      <label class="block text-gray-700 font-medium">About Book:</label>
-      <textarea
-        [(ngModel)]="book.aboutBook"
-        name="aboutBook"
-        rows="4"
-        required
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-      ></textarea>
-    </div>
-
-    <!-- Book Image -->
-    <div class="mb-4">
-      <label class="block text-gray-700 font-medium">Book Image:</label>
-      <input
-        [(ngModel)]="book.image"
-        name="image"
-        required
-        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
-      />
-    </div>
-
     <!-- Main Category -->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium">Main Category:</label>
@@ -112,6 +54,100 @@
       </select>
     </div>
 
+    <!-- About Book -->
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">About Book:</label>
+      <textarea
+        [(ngModel)]="book.aboutBook"
+        name="aboutBook"
+        rows="4"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      ></textarea>
+    </div>
+
+    <!-- Author Name -->
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Author Name:</label>
+      <select
+        [(ngModel)]="book.bookWriter"
+        name="bookWriter"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      >
+        <option value="">Select Author</option>
+        <option *ngFor="let auth of authors" [value]="auth.bookWriter">
+          {{ auth.bookWriter }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Book Language -->
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Book Language:</label>
+      <select
+        [(ngModel)]="book.language"
+        name="language"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      >
+        <option value="" disabled selected>Select Language</option>
+        <option value="urdu">Urdu</option>
+        <option value="english">English</option>
+        <option value="arabic">Arabic</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Is Popular:</label>
+      <select
+        [(ngModel)]="book.isPopular"
+        name="popular"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      >
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Is Latest:</label>
+      <select
+        [(ngModel)]="book.isLatest"
+        name="latest"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      >
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Is Featured:</label>
+      <select
+        [(ngModel)]="book.isFeatured"
+        name="featured"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      >
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+
+    <!-- Book Image -->
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Book Image:</label>
+      <input
+        type="file"
+        accept="image/*"
+        (change)="onImageSelected($event)"
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      />
+    </div>
+
     <!--Book Content-->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium">Book Content:</label>
@@ -119,8 +155,8 @@
         [(ngModel)]="book.bookContent"
         (change)="handleFileUpload($event)"
         name="bookContent"
-        type="file" 
-                required
+        type="file"
+        required
         class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
       />
     </div>
@@ -155,23 +191,25 @@
             class="hover:bg-gray-50"
           >
             <td>{{ i + 1 }}</td>
-            <td class="px-6 py-4 text-gray-800  max-w-36">
+            <td class="px-6 py-4 text-gray-800 max-w-36">
               {{ book.bookTitle }}
             </td>
-            <td class="px-6 py-4 text-gray-800  max-w-36">
+            <td class="px-6 py-4 text-gray-800 max-w-36">
               {{ book.bookWriter }}
             </td>
             <td class="px-6 py-4 text-gray-700 capitalize w-14">
               {{ book.language }}
             </td>
-            <td class="px-6 py-4 text-gray-700 w-14">{{ book.mainCategory }}</td>
+            <td class="px-6 py-4 text-gray-700 w-14">
+              {{ book.mainCategory }}
+            </td>
             <td class="px-6 py-4 text-gray-700 capitalize max-w-24">
               {{ book.categories.slice(0, -1).join(", ") }}
             </td>
             <td class="px-6 py-4 text-gray-700 truncate max-w-36">
               {{ book.aboutBook }}
             </td>
-            <td class="px-6 py-4 text-gray-700 truncate ">
+            <td class="px-6 py-4 text-gray-700 truncate">
               {{ book.isPopular }}
             </td>
             <td class="px-6 py-4 text-gray-700 w-24">
@@ -184,5 +222,3 @@
     </div>
   </div>
 </div>
-
-
