@@ -1,13 +1,6 @@
 import { Injectable } from '@angular/core';
-import {
-  collection,
-  deleteDoc,
-  doc,
-  Firestore,
-  getDocs,
-  setDoc,
-  updateDoc,
-} from 'firebase/firestore';
+import { collection, deleteDoc, doc, Firestore, getDocs, setDoc, updateDoc } from '@angular/fire/firestore';
+
 import { from, map, Observable } from 'rxjs';
 
 interface Ad {
@@ -36,7 +29,7 @@ export class AdService {
     return from(updateDoc(adsRef, updatedAd)).pipe(map(() => {}));
   }
 
-  getCarousels(): Observable<Ad[]> {
+  getAds(): Observable<Ad[]> {
     const adsRef = collection(this.firestore, this.collectionPath);
 
     return from(getDocs(adsRef)).pipe(
