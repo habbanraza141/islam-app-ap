@@ -3,6 +3,7 @@ import { AuthService } from '../../shared/services/auth.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from '../../shared/services/cookie.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -43,7 +44,14 @@ export class LoginComponent {
         this.cookiesService.setCookie('authUser', JSON.stringify(user), 7);
         this.router.navigate(['/']);
       },
-      error: (err) => console.error('Login error:', err.message),
+      error: (err) => {
+        console.error('Login error:', err.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Username or password is incorrect',
+        });
+      },
     });
   }
 
