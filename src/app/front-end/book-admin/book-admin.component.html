@@ -137,6 +137,19 @@
       </select>
     </div>
 
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium">Is Poetry:</label>
+      <select
+        [(ngModel)]="book.isPoetry"
+        name="poetry"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+      >
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+
     <!-- Book Image -->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium">Book Image:</label>

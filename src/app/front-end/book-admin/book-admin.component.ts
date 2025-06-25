@@ -22,6 +22,7 @@ interface Book {
   isPopular?: boolean;
   isFeatured?: boolean;
   isLatest?: boolean;
+  isPoetry?: boolean;
 }
 
 @Component({
@@ -64,6 +65,7 @@ export class BookAdminComponent implements OnInit {
     isPopular: false,
     isFeatured: false,
     isLatest: false,
+    isPoetry: false,
 
     categories: [] as string[],
   };
@@ -318,6 +320,7 @@ deleteBook(index: number) {
     isPopular: false,
     isFeatured: false,
     isLatest: false,
+    isPoetry: false,
     };
     this.selectedFile = null;
 
