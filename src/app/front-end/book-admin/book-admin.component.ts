@@ -4,9 +4,14 @@ import { CommonModule } from '@angular/common';
 import { BookService } from '../../shared/services/book.service';
 import { CategoryService } from '../../shared/services/category.service';
 import { AuthorService } from '../../shared/services/author.service';
-import Swal from 'sweetalert2'; 
+import Swal from 'sweetalert2';
 import * as mammoth from 'mammoth';
-import { Storage , ref, uploadBytes, getDownloadURL} from '@angular/fire/storage';
+import {
+  Storage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from '@angular/fire/storage';
 
 interface Book {
   id: number;
@@ -18,7 +23,7 @@ interface Book {
   mainCategory: string;
   language: string;
   image: string;
-  docId?: string; 
+  docId?: string;
   isPopular?: boolean;
   isFeatured?: boolean;
   isLatest?: boolean;
@@ -42,18 +47,17 @@ export class BookAdminComponent implements OnInit {
   authors: any[] = [];
   docContent: string = '';
   selectedFile: File | null = null;
-  isLoading: boolean = false
+  isLoading: boolean = false;
 
   constructor(
     private bookService: BookService,
     private categoryService: CategoryService,
-    private authorService: AuthorService
-    , private storage: Storage
+    private authorService: AuthorService,
+    private storage: Storage
   ) {}
   editIndex: number | null = null;
 
   book: Book = {
-    
     id: 0,
     bookTitle: '',
     bookWriter: '',
@@ -80,15 +84,18 @@ export class BookAdminComponent implements OnInit {
 
         try {
           const result = await mammoth.convertToHtml({ arrayBuffer });
-          this.book.bookContent = result.value; // HTML content
-          console.log("Converted HTML:", result.value);
+          let html = result.value;
+          html = html.replace(/<p>(.*?)<br\s*\/?><\/p>/g, '<p>$1</p><br />');
+          html = html.replace(/<p>\s*<\/p>/g, '<br />');
+          this.book.bookContent = html; 
+          console.log('Converted HTML:', html);
         } catch (error) {
-          console.error("Error converting docx:", error);
+          console.error('Error converting docx:', error);
         }
       };
       reader.readAsArrayBuffer(file);
     } else {
-      alert("Only .docx files are supported.");
+      alert('Only .docx files are supported.');
     }
   }
 
@@ -137,15 +144,20 @@ export class BookAdminComponent implements OnInit {
 
   async submitForm() {
     const bookData = { ...this.book };
-  
-    if (!bookData.bookTitle || !bookData.bookContent || !bookData.mainCategory || !bookData.bookWriter) {
+
+    if (
+      !bookData.bookTitle ||
+      !bookData.bookContent ||
+      !bookData.mainCategory ||
+      !bookData.bookWriter
+    ) {
       alert('Please fill all required fields.');
       return;
     }
-  
+
     try {
       this.isLoading = true;
-  
+
       // 🔼 1. Upload image if selected
       if (this.selectedFile) {
         const filePath = `book_images/${Date.now()}_${this.selectedFile.name}`;
@@ -154,7 +166,7 @@ export class BookAdminComponent implements OnInit {
         const downloadURL = await getDownloadURL(uploadResult.ref);
         bookData.image = downloadURL;
       }
-  
+
       // 🔁 2. EDIT MODE
       if (this.editIndex !== null) {
         const docId = this.bookList[this.editIndex].docId;
@@ -163,14 +175,14 @@ export class BookAdminComponent implements OnInit {
           this.isLoading = false;
           return;
         }
-  
+
         Swal.fire({
           title: 'Are you sure?',
           text: `Do you want to update "${bookData.bookTitle}"?`,
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Yes, update it!',
-          cancelButtonText: 'Cancel'
+          cancelButtonText: 'Cancel',
         }).then((result) => {
           if (result.isConfirmed) {
             this.bookService.updateBook(docId, bookData).subscribe({
@@ -189,20 +201,19 @@ export class BookAdminComponent implements OnInit {
               error: (err) => {
                 console.error('Error updating book:', err);
                 this.isLoading = false;
-              }
+              },
             });
           } else {
             this.isLoading = false;
           }
         });
-  
       } else {
         // ➕ 3. ADD MODE
         const maxId = this.bookList.length
           ? Math.max(...this.bookList.map((b) => b.id || 0))
           : 0;
         bookData.id = maxId + 1;
-  
+
         this.bookService.addBook(bookData).subscribe({
           next: () => {
             this.bookService.getBooks().subscribe((books) => {
@@ -220,38 +231,39 @@ export class BookAdminComponent implements OnInit {
           error: (err) => {
             console.error('Error submitting book:', err);
             this.isLoading = false;
-          }
+          },
         });
       }
-  
     } catch (error) {
       console.error('Upload error:', error);
       this.isLoading = false;
     }
-    this.resetForm()
+    this.resetForm();
   }
-  
-  
 
   editBook(index: number) {
     this.editIndex = index;
     const bookToEdit = this.bookList[index];
     this.book = { ...bookToEdit };
-      const category = this.categories.find(cat => cat.category === bookToEdit.mainCategory);
+    const category = this.categories.find(
+      (cat) => cat.category === bookToEdit.mainCategory
+    );
     if (category) {
       this.selectedCategoryId = category.id;
       this.subCategories = category.subCategories;
     }
-  
-    const author = this.authors.find(auth => auth.bookWriter === bookToEdit.bookWriter);
+
+    const author = this.authors.find(
+      (auth) => auth.bookWriter === bookToEdit.bookWriter
+    );
     if (author) {
       this.selectedAuthorId = author.id;
     }
   }
-  
+
   onImageSelected(event: any) {
     const file = event.target.files[0];
-  
+
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -260,51 +272,49 @@ export class BookAdminComponent implements OnInit {
       reader.readAsDataURL(file);
     }
   }
-  
 
+  deleteBook(index: number) {
+    const bookToDelete = this.bookList[index];
 
-deleteBook(index: number) {
-  const bookToDelete = this.bookList[index];
-
-  if (!bookToDelete.docId) {
-    console.error('No Firestore document ID found for this book.');
-    return;
-  }
-
-  Swal.fire({
-    title: `Are you sure you want to delete "${bookToDelete.bookTitle}"?`,
-    // text: 'This action cannot be undone!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'Cancel'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.bookService.deleteBook(bookToDelete.docId).subscribe({
-        next: () => {
-          this.bookList.splice(index, 1);
-          Swal.fire({
-            icon: 'success',
-            title: 'Deleted!',
-            text: `Book "${bookToDelete.bookTitle}" was deleted successfully.`,
-            timer: 1000,
-            showConfirmButton: false
-          });
-        },
-        error: (err) => {
-          console.error('Error deleting Book:', err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'There was a problem deleting the book. Please try again later.',
-          });
-        },
-      });
+    if (!bookToDelete.docId) {
+      console.error('No Firestore document ID found for this book.');
+      return;
     }
-  });
-}
+
+    Swal.fire({
+      title: `Are you sure you want to delete "${bookToDelete.bookTitle}"?`,
+      // text: 'This action cannot be undone!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.bookService.deleteBook(bookToDelete.docId).subscribe({
+          next: () => {
+            this.bookList.splice(index, 1);
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: `Book "${bookToDelete.bookTitle}" was deleted successfully.`,
+              timer: 1000,
+              showConfirmButton: false,
+            });
+          },
+          error: (err) => {
+            console.error('Error deleting Book:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'There was a problem deleting the book. Please try again later.',
+            });
+          },
+        });
+      }
+    });
+  }
 
   resetForm() {
     this.book = {
@@ -317,12 +327,11 @@ deleteBook(index: number) {
       aboutBook: '',
       mainCategory: '',
       categories: [],
-    isPopular: false,
-    isFeatured: false,
-    isLatest: false,
-    isPoetry: false,
+      isPopular: false,
+      isFeatured: false,
+      isLatest: false,
+      isPoetry: false,
     };
     this.selectedFile = null;
-
   }
 }
