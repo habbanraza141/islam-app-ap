@@ -17,6 +17,7 @@ interface Book {
   id: number;
   bookTitle: string;
   bookWriter: string;
+  docSharedLink: string;
   aboutBook: string;
   bookContent: string;
   categories: string[];
@@ -65,6 +66,7 @@ export class BookAdminComponent implements OnInit {
     bookContent: '',
     image: '',
     aboutBook: '',
+    docSharedLink: '',
     mainCategory: '',
     isPopular: false,
     isFeatured: false,
@@ -158,7 +160,6 @@ export class BookAdminComponent implements OnInit {
     try {
       this.isLoading = true;
 
-      // 🔼 1. Upload image if selected
       if (this.selectedFile) {
         const filePath = `book_images/${Date.now()}_${this.selectedFile.name}`;
         const storageRef = ref(this.storage, filePath);
@@ -167,7 +168,6 @@ export class BookAdminComponent implements OnInit {
         bookData.image = downloadURL;
       }
 
-      // 🔁 2. EDIT MODE
       if (this.editIndex !== null) {
         const docId = this.bookList[this.editIndex].docId;
         if (!docId) {
@@ -208,7 +208,6 @@ export class BookAdminComponent implements OnInit {
           }
         });
       } else {
-        // ➕ 3. ADD MODE
         const maxId = this.bookList.length
           ? Math.max(...this.bookList.map((b) => b.id || 0))
           : 0;
@@ -267,7 +266,7 @@ export class BookAdminComponent implements OnInit {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        this.book.image = reader.result as string; // Base64 string
+        this.book.image = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -283,7 +282,6 @@ export class BookAdminComponent implements OnInit {
 
     Swal.fire({
       title: `Are you sure you want to delete "${bookToDelete.bookTitle}"?`,
-      // text: 'This action cannot be undone!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -325,6 +323,7 @@ export class BookAdminComponent implements OnInit {
       image: '',
       language: '',
       aboutBook: '',
+      docSharedLink: '',
       mainCategory: '',
       categories: [],
       isPopular: false,
