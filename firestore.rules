@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Admin login collection - allow read for authentication
+    match /adminlogin/{document=**} {
+      allow read: if true;
+      allow write: if false; // Only allow writes through Firebase Console or Admin SDK
+    }
+    
+    // Books collection
+    match /booksCollection001/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Categories collection
+    match /categories001/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Authors collection
+    match /Authors/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Carousel images collection
+    match /carouselimages/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Advertisements collection
+    match /advertisements/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
