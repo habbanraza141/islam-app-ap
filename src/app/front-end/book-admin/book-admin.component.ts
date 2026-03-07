@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BookService } from '../../shared/services/book.service';
@@ -50,7 +50,6 @@ export class BookAdminComponent implements OnInit {
   docContent: string = '';
   selectedFile: File | null = null;
   isLoading: boolean = false;
-  @ViewChild('imageInput') imageInputRef!: ElementRef<HTMLInputElement>;
 
   constructor(
     private bookService: BookService,
@@ -380,9 +379,5 @@ export class BookAdminComponent implements OnInit {
     this.selectedSubCategory = null;
     this.subCategories = [];
     this.editIndex = null;
-    // Reset file input
-    if (this.imageInputRef) {
-      this.imageInputRef.nativeElement.value = '';
-    }
   }
 }
