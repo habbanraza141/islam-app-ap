@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BookService } from '../../shared/services/book.service';
 import { CategoryService } from '../../shared/services/category.service';
 import { AuthorService } from '../../shared/services/author.service';
+import { LoadingService } from '../../shared/services/loading.service';
 import Swal from 'sweetalert2';
 import * as mammoth from 'mammoth';
 import {
@@ -49,12 +50,14 @@ export class BookAdminComponent implements OnInit {
   docContent: string = '';
   selectedFile: File | null = null;
   isLoading: boolean = false;
+  @ViewChild('imageInput') imageInputRef!: ElementRef<HTMLInputElement>;
 
   constructor(
     private bookService: BookService,
     private categoryService: CategoryService,
     private authorService: AuthorService,
-    private storage: Storage
+    private storage: Storage,
+    private loadingService: LoadingService
   ) {}
   editIndex: number | null = null;
 
@@ -102,22 +105,40 @@ export class BookAdminComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authorService.getAuthors().subscribe({
+    // Show loader for Firestore calls (these are not intercepted by HttpClient)
+    this.loadingService.show();
+    this.authorService.getAuthors().pipe().subscribe({
       next: (data) => {
         this.authors = data;
         console.log('Authors fetched:', this.authors);
+        this.loadingService.hide();
       },
-      error: (err) => console.error('Error fetching Authors:', err),
+      error: (err) => {
+        console.error('Error fetching Authors:', err);
+        this.loadingService.hide();
+      },
     });
+
+    this.loadingService.show();
     this.categoryService.getCategories().subscribe((categories) => {
       this.categories = categories;
+      this.loadingService.hide();
+    }, (err) => {
+      console.error('Error fetching categories:', err);
+      this.loadingService.hide();
     });
+
+    this.loadingService.show();
     this.bookService.getBooks().subscribe({
       next: (data) => {
         this.bookList = data;
         console.log('Books fetched:', this.bookList);
+        this.loadingService.hide();
       },
-      error: (err) => console.error('Error fetching books:', err),
+      error: (err) => {
+        console.error('Error fetching books:', err);
+        this.loadingService.hide();
+      },
     });
   }
 
@@ -160,12 +181,23 @@ export class BookAdminComponent implements OnInit {
     try {
       this.isLoading = true;
 
+      // Handle image upload for new file or preserve existing image
       if (this.selectedFile) {
+        // New file selected - upload it
         const filePath = `book_images/${Date.now()}_${this.selectedFile.name}`;
         const storageRef = ref(this.storage, filePath);
         const uploadResult = await uploadBytes(storageRef, this.selectedFile);
         const downloadURL = await getDownloadURL(uploadResult.ref);
         bookData.image = downloadURL;
+      } else if (this.editIndex !== null && !this.selectedFile) {
+        // Updating without new file - preserve existing image URL
+        const existingBook = this.bookList[this.editIndex];
+        if (existingBook.image && existingBook.image.startsWith('http')) {
+          // Keep the existing Firebase Storage URL
+          bookData.image = existingBook.image;
+        }
+        // If image is a data URL (base64), it means user selected but didn't upload yet
+        // In that case, we should keep the existing image from the database
       }
 
       if (this.editIndex !== null) {
@@ -187,16 +219,19 @@ export class BookAdminComponent implements OnInit {
           if (result.isConfirmed) {
             this.bookService.updateBook(docId, bookData).subscribe({
               next: () => {
-                this.bookList[this.editIndex!] = { ...bookData, docId };
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Updated!',
-                  text: `"${bookData.bookTitle}" was updated successfully.`,
-                  confirmButtonText: 'OK',
+                // Refresh the book list to get updated data
+                this.bookService.getBooks().subscribe((books) => {
+                  this.bookList = books;
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    text: `"${bookData.bookTitle}" was updated successfully.`,
+                    confirmButtonText: 'OK',
+                  });
+                  this.resetForm();
+                  this.editIndex = null;
+                  this.isLoading = false;
                 });
-                this.resetForm();
-                this.editIndex = null;
-                this.isLoading = false;
               },
               error: (err) => {
                 console.error('Error updating book:', err);
@@ -237,19 +272,24 @@ export class BookAdminComponent implements OnInit {
       console.error('Upload error:', error);
       this.isLoading = false;
     }
-    this.resetForm();
   }
 
   editBook(index: number) {
     this.editIndex = index;
     const bookToEdit = this.bookList[index];
     this.book = { ...bookToEdit };
+    // Reset selected file when editing
+    this.selectedFile = null;
+    
     const category = this.categories.find(
       (cat) => cat.category === bookToEdit.mainCategory
     );
     if (category) {
       this.selectedCategoryId = category.id;
       this.subCategories = category.subCategories;
+    } else {
+      this.selectedCategoryId = null;
+      this.subCategories = [];
     }
 
     const author = this.authors.find(
@@ -257,6 +297,8 @@ export class BookAdminComponent implements OnInit {
     );
     if (author) {
       this.selectedAuthorId = author.id;
+    } else {
+      this.selectedAuthorId = null;
     }
   }
 
@@ -264,9 +306,10 @@ export class BookAdminComponent implements OnInit {
     const file = event.target.files[0];
 
     if (file) {
+      this.selectedFile = file; // Store the file for upload
       const reader = new FileReader();
       reader.onload = () => {
-        this.book.image = reader.result as string;
+        this.book.image = reader.result as string; // Preview the image
       };
       reader.readAsDataURL(file);
     }
@@ -332,5 +375,14 @@ export class BookAdminComponent implements OnInit {
       isPoetry: false,
     };
     this.selectedFile = null;
+    this.selectedCategoryId = null;
+    this.selectedAuthorId = null;
+    this.selectedSubCategory = null;
+    this.subCategories = [];
+    this.editIndex = null;
+    // Reset file input
+    if (this.imageInputRef) {
+      this.imageInputRef.nativeElement.value = '';
+    }
   }
 }

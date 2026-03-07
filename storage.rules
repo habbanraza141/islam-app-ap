@@ -1,0 +1,24 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow read/write access to book_images folder
+    match /book_images/{allPaths=**} {
+      allow read, write: if true;
+    }
+    
+    // Allow read/write access to carousel_images folder
+    match /carousel_images/{allPaths=**} {
+      allow read, write: if true;
+    }
+    
+    // Allow read/write access to ad_images folder
+    match /ad_images/{allPaths=**} {
+      allow read, write: if true;
+    }
+    
+    // Default deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
