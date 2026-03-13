@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AuthService } from '../../shared/services/auth.service';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
@@ -28,12 +27,7 @@ export class SideBarComponent implements OnInit {
   }
 
   activeRoute = 'books';
-  constructor(private authService: AuthService, private router: Router) {}
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
+  constructor(private router: Router) {}
 
   navigateTo(route: string) {
     this.activeRoute = route;

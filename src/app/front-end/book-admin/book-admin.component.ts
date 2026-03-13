@@ -60,6 +60,31 @@ export class BookAdminComponent implements OnInit {
   ) {}
   editIndex: number | null = null;
 
+  // Helper function to extract error message
+  private getErrorMessage(error: any): string {
+    if (error?.message) {
+      return error.message;
+    }
+    if (error?.code) {
+      // Map common Firebase error codes to user-friendly messages
+      const errorMessages: { [key: string]: string } = {
+        'storage/unauthorized': 'Storage access denied. Please check Firebase Storage rules and billing setup.',
+        'storage/canceled': 'Upload was canceled.',
+        'storage/unknown': 'An unknown error occurred during upload.',
+        'storage/invalid-format': 'Invalid file format.',
+        'storage/not-found': 'Storage bucket not found.',
+        'permission-denied': 'Permission denied. Please check Firebase security rules.',
+        'unavailable': 'Service unavailable. Please check your internet connection.',
+        'unauthenticated': 'Authentication required. Please log in again.',
+      };
+      return errorMessages[error.code] || `Error: ${error.code}`;
+    }
+    if (typeof error === 'string') {
+      return error;
+    }
+    return 'An unexpected error occurred. Please try again.';
+  }
+
   book: Book = {
     id: 0,
     bookTitle: '',
@@ -115,6 +140,12 @@ export class BookAdminComponent implements OnInit {
       error: (err) => {
         console.error('Error fetching Authors:', err);
         this.loadingService.hide();
+        const errorMessage = this.getErrorMessage(err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error Loading Authors',
+          text: errorMessage,
+        });
       },
     });
 
@@ -125,6 +156,12 @@ export class BookAdminComponent implements OnInit {
     }, (err) => {
       console.error('Error fetching categories:', err);
       this.loadingService.hide();
+      const errorMessage = this.getErrorMessage(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error Loading Categories',
+        text: errorMessage,
+      });
     });
 
     this.loadingService.show();
@@ -137,6 +174,12 @@ export class BookAdminComponent implements OnInit {
       error: (err) => {
         console.error('Error fetching books:', err);
         this.loadingService.hide();
+        const errorMessage = this.getErrorMessage(err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error Loading Books',
+          text: errorMessage,
+        });
       },
     });
   }
@@ -182,12 +225,24 @@ export class BookAdminComponent implements OnInit {
 
       // Handle image upload for new file or preserve existing image
       if (this.selectedFile) {
-        // New file selected - upload it
-        const filePath = `book_images/${Date.now()}_${this.selectedFile.name}`;
-        const storageRef = ref(this.storage, filePath);
-        const uploadResult = await uploadBytes(storageRef, this.selectedFile);
-        const downloadURL = await getDownloadURL(uploadResult.ref);
-        bookData.image = downloadURL;
+        try {
+          // New file selected - upload it
+          const filePath = `book_images/${Date.now()}_${this.selectedFile.name}`;
+          const storageRef = ref(this.storage, filePath);
+          const uploadResult = await uploadBytes(storageRef, this.selectedFile);
+          const downloadURL = await getDownloadURL(uploadResult.ref);
+          bookData.image = downloadURL;
+        } catch (uploadError: any) {
+          this.isLoading = false;
+          const errorMessage = this.getErrorMessage(uploadError);
+          Swal.fire({
+            icon: 'error',
+            title: 'Image Upload Failed',
+            text: errorMessage,
+            footer: 'If this persists, please ensure Firebase billing is enabled and storage rules are configured.',
+          });
+          return;
+        }
       } else if (this.editIndex !== null && !this.selectedFile) {
         // Updating without new file - preserve existing image URL
         const existingBook = this.bookList[this.editIndex];
@@ -202,8 +257,12 @@ export class BookAdminComponent implements OnInit {
       if (this.editIndex !== null) {
         const docId = this.bookList[this.editIndex].docId;
         if (!docId) {
-          console.error('Missing docId for update');
           this.isLoading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: 'Missing document ID. Please refresh the page and try again.',
+          });
           return;
         }
 
@@ -235,6 +294,12 @@ export class BookAdminComponent implements OnInit {
               error: (err) => {
                 console.error('Error updating book:', err);
                 this.isLoading = false;
+                const errorMessage = this.getErrorMessage(err);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Update Failed',
+                  text: errorMessage,
+                });
               },
             });
           } else {
@@ -264,12 +329,24 @@ export class BookAdminComponent implements OnInit {
           error: (err) => {
             console.error('Error submitting book:', err);
             this.isLoading = false;
+            const errorMessage = this.getErrorMessage(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Submission Failed',
+              text: errorMessage,
+            });
           },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
       this.isLoading = false;
+      const errorMessage = this.getErrorMessage(error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorMessage,
+      });
     }
   }
 
@@ -318,7 +395,11 @@ export class BookAdminComponent implements OnInit {
     const bookToDelete = this.bookList[index];
 
     if (!bookToDelete.docId) {
-      console.error('No Firestore document ID found for this book.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Delete Failed',
+        text: 'No Firestore document ID found for this book. Please refresh the page.',
+      });
       return;
     }
 
@@ -345,10 +426,11 @@ export class BookAdminComponent implements OnInit {
           },
           error: (err) => {
             console.error('Error deleting Book:', err);
+            const errorMessage = this.getErrorMessage(err);
             Swal.fire({
               icon: 'error',
-              title: 'Error',
-              text: 'There was a problem deleting the book. Please try again later.',
+              title: 'Delete Failed',
+              text: errorMessage,
             });
           },
         });

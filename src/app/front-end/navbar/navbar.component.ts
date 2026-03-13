@@ -1,7 +1,5 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AuthService } from '../../shared/services/auth.service';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
@@ -11,25 +9,11 @@ import { Router } from '@angular/router';
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent implements OnInit{
-  constructor (private authService: AuthService, private router : Router) {}
+  constructor() {}
   ngOnInit(): void {}
   @Output() toggle = new EventEmitter<void>();
-  showLogoutMenu = false;
-
-  toggleLogoutMenu() {
-    this.showLogoutMenu = !this.showLogoutMenu;
-  }
 
   toggleSidebar() {
     this.toggle.emit(); // Notify parent to toggle sidebar
   }
-
-  logout() {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
-      },
-      error: (err) => console.error('Logout failed:', err)
-    });
-  }  
 }
